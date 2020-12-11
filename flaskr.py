@@ -16,3 +16,13 @@ def conectar_bd():
 def pre_request():
     g.bd = conectar_bd()
 
+@app.teardown_request
+def pos_request():
+    g.bd.close()
+
+@app.route('/')
+def exibir_entradas():
+    sql = 'SELECT titulo, texto, FROM entradas ORDER BY id DESC'
+    cursor = g.bd.execute(sql)
+    entradas = [dict(titulo=titulo, texto=texto) for titulo, texto in cursor.fetchall()]
+    return render_template('exibir_entradas.html')
